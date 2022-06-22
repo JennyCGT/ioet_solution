@@ -1,5 +1,7 @@
 from datetime import time, datetime, timedelta
 import os 
+import argparse
+
 path = os.getcwd()
 FORMAT = '%H:%M'
 FILE =  'ioet_solution/schedule.txt'
@@ -54,7 +56,12 @@ def divide_in_range(day, hour_init, hour_end):
     return total
 
 def main():
-    with  open(os.path.join(path,FILE),'r') as f:
+    parser = argparse.ArgumentParser(description='Get the hours worked from file.txt')
+    parser.add_argument('--file', dest='file', default="schedule.txt",
+                    help='Get the hours worked from users hours written in a file.txt (default file name: schedule.txt)')
+    args = parser.parse_args()
+    file_name = args.file
+    with  open(os.path.join(path,file_name),'r') as f:
         data_text = f.read().splitlines() 
     for case in data_text:
         total = 0
