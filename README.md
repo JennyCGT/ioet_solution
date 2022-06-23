@@ -18,6 +18,8 @@ This function check if the entry hour is inside the range, otherwise add 0 value
 In subtract calculation the system round hours so if a person work more than 30 minutes it's considerate a complete hour. Also if exit hour is 0:00 the system add a day in order to considerate it a 0:00 of the next day.
 Finally there are an array with the hours worked by range and another with price for range so, the code multiplicate two array element by element and sum all for get the total to pay by day.
 
+I have made some test for divide_in_range function in order to check that total calculation is working fine with different situation.
+
 ## Instruction
 I have use poetry for create the python project so it's compatible with python> 3.7
 To execute the code it's necessary to have python installed.
