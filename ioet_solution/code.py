@@ -29,10 +29,12 @@ def divide_in_range(day, hour_init, hour_end):
         if flag ==1:
             hour_init= r_start
             flag=0
-        if r_end.strftime(FORMAT) == '00:00':
+
+        if r_end.strftime(FORMAT) == '00:00': #
             r_end1 = r_end- timedelta(minutes=1)+ timedelta(days=1)
         else:
             r_end1 = r_end
+
         if hour_init >= r_start  and hour_init <= r_end1 :
             if hour_end >= r_start and  hour_end <= r_end1:
                 if hour_end.strftime(FORMAT) =='00:00':
@@ -83,9 +85,8 @@ def main():
                     total += total_day
                 message = f'The amount to pay {name} is: {total} USD'
                 print(message)
+                print('*******************************************************************************')
         except Exception as error:
             message = f'Data erronea verifique el formato : {case}'
             print(message)
             print(error)
-if __name__ == '__main__':    
-    print('test')
