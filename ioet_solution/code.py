@@ -5,14 +5,11 @@ import argparse
 path = os.getcwd()
 FORMAT = '%H:%M'
 FILE =  'ioet_solution/schedule.txt'
+week = ['MO','TU','WE','TH','FR']
+weekend = ['SA','SU']
 days_hour = {
-    'MO':{'ranges':['00:01-09:00','09:01-18:00','18:01-00:00'],'prices':[25,15,20]},
-    'TU':{'ranges':['00:01-09:00','09:01-18:00','18:01-00:00'],'prices':[25,15,20]},
-    'WE':{'ranges':['00:01-09:00','09:01-18:00','18:01-00:00'],'prices':[25,15,20]},
-    'TH':{'ranges':['00:01-09:00','09:01-18:00','18:01-00:00'],'prices':[25,15,20]},
-    'FR':{'ranges':['00:01-09:00','09:01-18:00','18:01-00:00'],'prices':[25,15,20]},
-    'SA':{'ranges':['00:01-09:00','09:01-18:00','18:01-00:00'],'prices':[30,20,25]},
-    'SU':{'ranges':['00:01-09:00','09:01-18:00','18:01-00:00'],'prices':[30,20,25]},
+    'week':{'ranges':['00:01-09:00','09:01-18:00','18:01-00:00'],'prices':[25,15,20]},
+    'weekend':{'ranges':['00:01-09:00','09:01-18:00','18:01-00:00'],'prices':[30,20,25]},
 }
 
 def divide_in_range(day, hour_init, hour_end):
@@ -22,6 +19,9 @@ def divide_in_range(day, hour_init, hour_end):
     last_hour =hour_init
     total_day = 0
     flag = 0
+    if hour_init.strftime(FORMAT)=='00:00':
+        hour_init = hour_init+ timedelta(minutes=1)
+
     for rng in day_range:        
         [start,end] = rng.split('-')
         r_start = datetime.strptime(start, FORMAT)
@@ -42,14 +42,14 @@ def divide_in_range(day, hour_init, hour_end):
                 else:
                     time1 = hour_end - last_hour
                 duration = time1.total_seconds()
-                hours_by_range.append(divmod(duration, 3600)[0]) 
+                hours_by_range.append(round(duration/float(3600))) 
             else:
                 if r_end.strftime(FORMAT) =='00:00':
                     time1 =r_end + timedelta(days=1)- last_hour
                 else:
                     time1 = r_end - last_hour
                 duration = time1.total_seconds()
-                hours_by_range.append(divmod(duration, 3600)[0]) 
+                hours_by_range.append(round(duration/float(3600))) 
                 last_hour = r_end
                 flag=1
         else:
@@ -63,8 +63,13 @@ def main():
                     help='Get the hours worked from users hours written in a file.txt (default file name: schedule.txt)')
     args = parser.parse_args()
     file_name = args.file
-    with  open(os.path.join(path,file_name),'r') as f:
-        data_text = f.read().splitlines() 
+    data_text = []
+    try:
+        with  open(os.path.join(path,file_name),'r') as f:
+            data_text = f.read().splitlines() 
+    except Exception as error:
+        print('Error:',error)
+        
     for case in data_text:
         total = 0
         try:
@@ -80,13 +85,25 @@ def main():
                     if hour_end < hour_init and hour_end.strftime(FORMAT)!='00:00':
                         error = f'La hora de entrada debe ser mayor que la salida, verifique el formato de {name}'
                         raise Exception(error)
-
-                    total_day= divide_in_range(data[0:2], hour_init, hour_end)
+                    if data[0:2] in week:
+                        day = 'week'
+                    elif data[0:2] in weekend:
+                        day = 'weekend'
+                    else:
+                        message = f'El código del día es erroneo, verifique el formatp de {name}'
+                        raise Exception(message)
+                    total_day= divide_in_range(day, hour_init, hour_end)
                     total += total_day
                 message = f'The amount to pay {name} is: {total} USD'
                 print(message)
                 print('*******************************************************************************')
         except Exception as error:
-            message = f'Data erronea verifique el formato : {case}'
+            message = f'Msg: Data erronea verifique el formato : {case}'
+            error = f'Error: {error}'
             print(message)
             print(error)
+            print('*******************************************************************************')
+
+
+if __name__ == '__main__':
+    main()
